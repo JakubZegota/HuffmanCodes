@@ -4,39 +4,34 @@ package com.company;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.IOException;
-//z pliku input, kopce(kolejka p., ekst. min, ins.)
+
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File file = new File("/home/jzegota/Code/JAZZ/Huffman/textToEncode.txt");
-        String textToEncode = Files.readString(Path.of("/home/jzegota/Code/JAZZ/Huffman/textToEncode.txt"));
+        File file = new File("/home/jzegota/Code/JAZZ/HuffmanCodes/textToEncode.txt");
+        String textToEncode = Files.readString(Path.of("/home/jzegota/Code/JAZZ/HuffmanCodes/textToEncode.txt"));
         HuffmanCode encodeText = new HuffmanCode(textToEncode);
         encodeText.keyFile();
         encodeText.encodedFile();
-        File file2 = new File("/home/jzegota/Code/JAZZ/Huffman/encodedFile.txt");
-       // String content = Files.readString(Path.of("/home/jzegota/Code/JAZZ/Huffman/encodedFile.txt"));
+        File file2 = new File("/home/jzegota/Code/JAZZ/HuffmanCodes/encodedFile.txt");
 
-        System.out.println("File textToEncode.txt of " + file.length() + " bytes converted into a file encodedFile.txt of " + file2.length() + " bytes." );
+        System.out.println("File textToEncode.txt of " + file.length() + " bytes converted into a file encodedFile.txt of " + file2.length() + " bytes.");
     }
 }
 
 
-
 class HuffmanCode {
-    //private Queue<Symbol> symbols;
     private List<Symbol> symbols = new ArrayList<>();
-    private List<Symbol> symbolsChart;
+    private List<Symbol> symbolsChart;  
     private String sampleText;
 
     public HuffmanCode(String sampleText) {
-        this.sampleText=sampleText;
+        this.sampleText = sampleText;
         for (char c : sampleText.toCharArray()) insertString(String.valueOf(c));
         symbolsChart = new ArrayList<>(symbols);
         this.buildTree();
@@ -44,8 +39,8 @@ class HuffmanCode {
 
     public void keyFile() throws IOException {
         FileWriter keyFile = new FileWriter("keyFile.txt");
-        for (Symbol symbol : symbolsChart){
-            String singleKeyLine = symbol.getString()+","+symbols.get(0).lookForCode(symbol)+";";
+        for (Symbol symbol : symbolsChart) {
+            String singleKeyLine = symbol.getString() + "," + symbols.get(0).lookForCode(symbol) + ";";
             keyFile.write(singleKeyLine);
         }
         keyFile.close();
@@ -54,19 +49,19 @@ class HuffmanCode {
     public void encodedFile() throws IOException {
 
         FileWriter encodedFile = new FileWriter("encodedFile.txt");
-        for (char c : this.sampleText.toCharArray()){
-            for(Symbol symbol : symbolsChart){
+        for (char c : this.sampleText.toCharArray()) {
+            for (Symbol symbol : symbolsChart) {
                 if (symbol.getString().equals(String.valueOf(c))) {
                     encodedFile.write(symbol.getCode());
                 }
             }
         }
         encodedFile.close();
-        var encoded = Files.readString(Path.of("/home/jzegota/Code/JAZZ/Huffman/encodedFile.txt"));
+        var encoded = Files.readString(Path.of("/home/jzegota/Code/JAZZ/HuffmanCodes/encodedFile.txt"));
         BitSet bitset = new BitSet(encoded.length());
         int bitcounter = 0;
-        for (Character c : encoded.toCharArray()){
-            if (c.equals('1')){
+        for (Character c : encoded.toCharArray()) {
+            if (c.equals('1')) {
                 bitset.set(bitcounter);
             }
             bitcounter++;
@@ -78,7 +73,7 @@ class HuffmanCode {
     }
 
     private void buildTree() {
-        while (symbols.size()>1){
+        while (symbols.size() > 1) {
             var sym1 = extractMin(symbols);
             var sym2 = extractMin(symbols);
             build(sym1, sym2);
@@ -114,13 +109,13 @@ class HuffmanCode {
         symbols.add(new Symbol(s, 1));
     }
 
-    private Symbol extractMin(List<Symbol> symbolList){
+    private Symbol extractMin(List<Symbol> symbolList) {
 
         Symbol comparingSymbol = symbolList.get(0);
-        for (Symbol symbol : symbolList){
-        if (symbol.getOccurence()<comparingSymbol.getOccurence()){
-            comparingSymbol = symbol;
-        }
+        for (Symbol symbol : symbolList) {
+            if (symbol.getOccurence() < comparingSymbol.getOccurence()) {
+                comparingSymbol = symbol;
+            }
         }
         symbolList.remove(comparingSymbol);
         return comparingSymbol;
@@ -142,11 +137,6 @@ class Symbol {
         this.code = "";
     }
 
-//    public String lookForCode(Symbol symbol) {
-//        if (this.leftChild != null && this.leftChild.getString().equals(symbol.getString())) return "0";
-//        else if (this.rightChild != null) return "1" + this.rightChild.lookForCode(symbol);
-//        else return "";
-//    }
 
     public String lookForCode(Symbol symbol) {
         if (this.equals(symbol)) {
